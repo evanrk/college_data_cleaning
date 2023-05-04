@@ -46,41 +46,11 @@ for filename in variable_filenames:
 
 
 data_filenames = os.listdir(PATH_TO_IPEDS_DATA)
-# # data_filenames = ["adm2021.csv"]
 
-# # data_files_size = 0
-
-# # for filename in data_filenames:
-#     # data_files_size += os.path.getsize(PATH_TO_IPEDS_DATA+"/"+filename)
-
-# for index, filename in enumerate(data_filenames): # iterates over every file in the data directory
-#     idps_data = pd.read_csv(PATH_TO_IPEDS_DATA+"/"+filename, encoding="ISO-8859-1")
-#     data_name = filename.split(".")[0]
-
-
-#     # idps_data.drop_duplicates("UNITID")
-    
-#     if not idps_data["UNITID"].duplicated().max(): # True is greater than False, so if theres one True it will skip the file
-#         idps_data = idps_data.set_index("UNITID")
-#         single_college_dfs.append(idps_data)
-#     else:
-#         multi_college_dfs.append(idps_data)
-
-
-# merged_df = functools.reduce(concat, single_college_dfs) # cool
 
 single_college_dfs, multi_college_dfs, merged_df = csv_tools.combine_csv(PATH_TO_IPEDS_DATA)
 
-# columns_to_drop = []
-# for index, column in enumerate(merged_df.columns):
-#     if column[0] == "X":
-#         columns_to_drop.append(column)
 
-# merged_df = merged_df.drop(columns=columns_to_drop)
-# merged_df.insert(0, "INSTNM", merged_df.pop("INSTNM"))
-# merged_df.sort_index()
-
-# print(merged_df.head())
 merged_df = csv_tools.drop_with_letter(merged_df, letter="X")
 merged_df.to_csv("./output/single_college_data_variables.csv")
 print(merged_df.head())
