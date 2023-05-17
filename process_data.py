@@ -45,62 +45,40 @@ for filename in variable_filenames:
         variable_meaning_dfs[data_name] = csv_data
 
 
-data_filenames = os.listdir(PATH_TO_IPEDS_DATA)
-
-
 single_college_dfs, multi_college_dfs, merged_df = csv_tools.combine_csv(PATH_TO_IPEDS_DATA)
 
 
-merged_df = csv_tools.drop_with_letter(merged_df, letter="X")
-merged_df.to_csv("./output/single_college_data_variables.csv")
-print(merged_df.head())
-# print(idps_data.to_dict(orient='index')[100654])
+# sal2021_is = pd.read_csv(PATH_TO_IPEDS_DATA+"/sal2021_is.csv")
+# s2021_sis = pd.read_csv(PATH_TO_IPEDS_DATA+"/s2021_sis.csv")
 
-    # for row in idps_data.iloc:
-        # college_data = {}
-        
+# sal2021_is.set_index(["UNITID", sal2021_is.columns[1]])
+# s2021_sis.set_index(["UNITID", s2021_sis.columns[1]])
+print(len(multi_college_dfs))
 
-# for index, column_title in enumerate(merged_df.columns):
-#     column = merged_df.iloc[index]
+edited_dfs = []
+words_edited_dfs = []
 
+for name, multi_college_df in multi_college_dfs:
+    
+    edited_df = csv_tools.drop_with_letter(multi_college_df.head(100))
+    # print(edited_df["OMCHRT"])
+    edited_df.set_index("UNITID")
+    
+    edited_df, words_edited_df = csv_tools.replace_names(edited_df, [variable_meaning_dfs["valuesets21"], variable_meaning_dfs["vartable21"]])
 
+    words_edited_df.to_csv(f"./output/converted_words/{name}.csv")
 
-# for filename in data_filenames: # iterates over every file in the data directory
-#     college_data = pd.read_csv(PATH_TO_IPEDS_DATA+"/"+filename, encoding="ISO-8859-1")
-#     data_name = filename.split(".")[0]
+# multi_college_df.to_csv("./output/multi_college_data_variables.csv")
 
-#     for association_df_name, association_df in variable_meaning_dfs.items(): # gets the association dataframe
-#         get_table_name = association_df["TableName"] == data_name.upper()
-#         association_df_filename = association_df[get_table_name] # gets the part of the df with this file in it
-        
-#         for column in college_data.columns: # for every column name in the columns of college_data
-#             var_name_df = association_df_filename[association_df_filename["varName"] == column]
-#             title_values = var_name_df["varTitle"].to_numpy()
-            
-#             if len(title_values): # if the title_value exists:
-#                 if "Codevalue" in var_name_df: # if there is a value to be decoded:
-#                     decoded_values = [] # list of the decoded values within every column of every college_data csv file
-#                     var_name_df = var_name_df.set_index("Codevalue")
-                    
-#                     for coded_value in college_data[column]: # checks for every coded value in the college data csv
-#                         try:
-#                             decoded_values.append(var_name_df.loc[str(coded_value).strip()]["valueLabel"]) # checks for regular
-#                         except KeyError: 
-#                             try:
-#                                 decoded_values.append(var_name_df.loc["0"+str(coded_value).strip()]["valueLabel"]) # adds leading zero
-#                             except KeyError: 
-#                                 try:
-#                                     decoded_values.append(var_name_df.loc[str(coded_value).strip()+"0"]["valueLabel"]) # adds trailing zero
-#                                 except KeyError:
-#                                     try: 
-#                                         decoded_values.append(var_name_df.loc[str(coded_value).strip()[:-2]]["valueLabel"]) # checks for extra trailing zero and decimal point
-#                                     except KeyError:
-#                                         try:
-#                                             decoded_values.append(var_name_df.loc["0"+str(coded_value).strip()+"0"]["valueLabel"]) # adds leading and trailing zero
-#                                         except KeyError:
-#                                             decoded_values.append(None)
-#                     # lol
-                                    
-#                     print(decoded_values)
-#     print(college_data.shape)
-# print("100%")
+# merged_df = pd.read_csv("./output/single_college_data_variables.csv", low_memory=False)
+
+# words_merged_df = pd.DataFrame()
+
+# merged_df, words_merged_df = csv_tools.replace_names(merged_df, variable_meaning_dfs["valuesets21"])
+# merged_df, words_merged_df_p2 = csv_tools.replace_names(merged_df, variable_meaning_dfs["vartable21"])
+# words_merged_df = pd.concat([words_merged_df, words_merged_df_p2])
+
+# for column in list(words_merged_df.columns):
+#     merged_df.drop(column)
+
+# merged_df.to_csv("./output/numbers_single_college_data.csv")
